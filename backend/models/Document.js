@@ -32,7 +32,7 @@ const documentSchema = new mongoose.Schema(
     },
     signature: {
       text: {
-        type: String, // The typed signature (e.g., "Rakesh Reddy")
+        type: String, // e.g., "Rakesh Reddy"
       },
       x: Number,
       y: Number,
@@ -43,11 +43,15 @@ const documentSchema = new mongoose.Schema(
     },
     auditTrail: [
       {
-        action: String,
-        user: {
+        action: {
+          type: String,
+          required: true, // e.g., "uploaded", "signed", "viewed"
+        },
+        performedBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
+        ip: String,
         timestamp: {
           type: Date,
           default: Date.now,
