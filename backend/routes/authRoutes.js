@@ -8,11 +8,13 @@ const {
   registerUser,
   loginUser,
   getMe,
+  deleteProfile,
 } = require("../controllers/authController");
 
 // Auth Routes
 router.post("/register", wrapAsync(registerUser)); // Register User
 router.post("/login", wrapAsync(loginUser)); // Login User
-router.get("/me", protect, getMe); // Get profile
+router.get("/profile", protect, wrapAsync(getMe)); // Get profile
+router.delete("/deleteProfile", protect, wrapAsync(deleteProfile));
 
 module.exports = router;

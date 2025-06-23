@@ -1,7 +1,9 @@
 const express = require("express");
 const cloudinary = require("../config/cloudinary");
+
 const streamifier = require("streamifier");
-const Document = require("../models/document");
+const Document = require("../models/Document");
+
 const logAuditEvent = require("../utils/auditLogger");
 
 // @desc   Upload pdf to cloudniry

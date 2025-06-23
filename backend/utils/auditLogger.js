@@ -1,5 +1,4 @@
-// utils/auditLogger.js
-const Document = require("../models/document");
+const Document = require("../models/Document");
 
 const logAuditEvent = async ({ docId, action, userId, ip }) => {
   await Document.findByIdAndUpdate(docId, {

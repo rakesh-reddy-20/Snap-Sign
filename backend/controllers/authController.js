@@ -1,6 +1,10 @@
-const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+const cloudinary = require("../config/cloudinary");
+
+const User = require("../models/User");
+const Document = require("../models/Document");
 
 // @desc   Register a new user
 // @route  POST /api/v1/auth/register
@@ -75,14 +79,66 @@ const loginUser = async (req, res) => {
   });
 };
 
+// @desc   Get User profile
+// @route  GET/api/v1/auth/profile
+// @access Private
 const getMe = async (req, res) => {
   res.status(200).json({
     user: req.user,
   });
 };
 
+// @desc   Delete User profile
+// @route  Delete/api/v1/auth/deleteProfile
+// @access Private
+const deleteProfile = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Step 1: Delete the user
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Step 2: Get all documents owned by the user
+    const userDocuments = await Document.find({ owner: userId });
+
+    // Step 3: Delete files from Cloudinary
+    const deleteCloudinaryFiles = userDocuments.map((doc) => {
+      if (!doc.fileUrl) return;
+
+      // Extract public ID from fileUrl
+      const parts = doc.fileUrl.split("/");
+      const publicIdWithExtension = parts
+        .slice(parts.indexOf("upload") + 1)
+        .join("/"); // folder/filename.pdf
+      const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, ""); // remove .pdf
+
+      return cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
+    });
+
+    await Promise.all(deleteCloudinaryFiles);
+
+    // Step 4: Delete documents from MongoDB
+    await Document.deleteMany({ owner: userId });
+
+    return res.status(200).json({
+      message: "User, documents, and Cloudinary files deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting profile and documents:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  deleteProfile,
 };
