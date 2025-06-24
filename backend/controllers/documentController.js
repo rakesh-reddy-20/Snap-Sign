@@ -131,34 +131,22 @@ const deleteStoredDoc = async (req, res) => {
       return res.status(400).json({ message: "Document ID is required." });
     }
 
-    // 1. Find the document
     const doc = await Document.findById(id);
     if (!doc) {
       return res.status(404).json({ message: "Document not found." });
     }
 
-    // 2. Check ownership (optional/protected route)
     if (String(doc.owner) !== String(req.user._id)) {
-      return res
-        .status(403)
-        .json({ message: "Not authorized to delete this document." });
+      return res.status(403).json({
+        message: "Not authorized to delete this document.",
+      });
     }
 
-    // 3. Extract public ID from fileUrl (Cloudinary PDF)
-    const fileUrl = doc.fileUrl;
-    const publicId = fileUrl.split("/").slice(-1)[0].split(".")[0]; // gets the file name without extension
-
-    // 4. Delete from Cloudinary
-    await cloudinary.uploader.destroy(`pdfs/${publicId}`, {
-      resource_type: "raw",
-    });
-
-    // 5. Delete from MongoDB
+    // Delete from MongoDB
     await Document.findByIdAndDelete(id);
 
     res.status(200).json({
-      message:
-        "Document deleted successfully from both MongoDB and Cloudinary.",
+      message: "Document deleted successfully!",
     });
   } catch (error) {
     console.error("Error deleting document:", error);

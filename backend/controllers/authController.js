@@ -108,23 +108,7 @@ const deleteProfile = async (req, res) => {
     // Step 2: Get all documents owned by the user
     const userDocuments = await Document.find({ owner: userId });
 
-    // Step 3: Delete files from Cloudinary
-    const deleteCloudinaryFiles = userDocuments.map((doc) => {
-      if (!doc.fileUrl) return;
-
-      // Extract public ID from fileUrl
-      const parts = doc.fileUrl.split("/");
-      const publicIdWithExtension = parts
-        .slice(parts.indexOf("upload") + 1)
-        .join("/"); // folder/filename.pdf
-      const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, ""); // remove .pdf
-
-      return cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
-    });
-
-    await Promise.all(deleteCloudinaryFiles);
-
-    // Step 4: Delete documents from MongoDB
+    // Step 3: Delete documents from MongoDB
     await Document.deleteMany({ owner: userId });
 
     return res.status(200).json({
