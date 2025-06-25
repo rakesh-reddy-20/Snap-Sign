@@ -1,10 +1,25 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
-import axiosInstance from "./../../utils/axiosInstance";
+
+import {
+  Card,
+  CardAction,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,7 +40,7 @@ const Register = () => {
     const { name, email, password, confirmPassword } = formData;
 
     if (!name || !email || !password || !confirmPassword) {
-      toast.error("Please fill all fields");
+      toast.error("All fields required!");
       return;
     }
 
@@ -45,10 +60,9 @@ const Register = () => {
 
       if (token) {
         localStorage.setItem("token", token);
-        updateUser({ token });
+        toast.success("Registered successfully!");
         navigate("/admin/dashboard");
       }
-      toast.success("Registered successfully!");
     } catch (error) {
       console.error(error);
       toast.error(
@@ -59,78 +73,93 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Create your SnapSign Account
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              autoFocus
-              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Rakesh Reddy"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full font-semibold bg-blue-600 hover:bg-blue-300 text-white py-2 px-4 rounded-lg transition duration-200 cursor-pointer"
-          >
-            Register
-          </button>
-        </form>
-        <p className="text-x font-semibold text-gray-500 mt-4 text-center">
+      <Card className="w-full max-w-sm">
+        <CardHeader className="text-left">
+          <CardTitle className="font-semibold">
+            Create your SnapSign account
+          </CardTitle>
+          <CardDescription className="font-semibold">
+            Enter your details to create a new account
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="name" className="mb-2 block">
+                Name
+              </Label>
+              <Input
+                id="name"
+                name="name"
+                autoFocus
+                type="text"
+                placeholder="Rakesh Reddy"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="email" className="mb-2 block">
+                Email
+              </Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="password" className="mb-2 block">
+                Password
+              </Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="confirmPassword" className="mb-2 block">
+                Confirm Password
+              </Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+            </div>
+
+            <CardFooter className="flex-col gap-2 px-0">
+              <Button type="submit" className="w-full">
+                Sign Up
+              </Button>
+              <Button variant="outline" className="w-full" type="button">
+                Continue with Google
+              </Button>
+            </CardFooter>
+          </form>
+        </CardContent>
+
+        <div className="text-sm font-semibold text-center text-muted-foreground mb-4">
           Already have an account?{" "}
           <a href="/login" className="text-blue-600 hover:underline">
-            Login
+            Log in
           </a>
-        </p>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 };

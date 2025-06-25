@@ -8,16 +8,17 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-
 import UserProvider, { UserContext } from "./context/userContext";
+
+import Navbar from "./components/layouts/Navbar";
 
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
-import Home from "./pages/User/Home";
+import DashboardPage from "./pages/User/DashboardPage";
+import About from "./pages/User/About";
+import Uploads from "./pages/User/Uploads";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <UserProvider>
       <div>
@@ -26,8 +27,11 @@ function App() {
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<SignUp />} />
-
-            <Route path="/admin/dashboard" element={<Home />} />
+            <Route path="/" element={<Navbar />}>
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="about" element={<About />} />
+              <Route path="uploads" element={<Uploads />} />
+            </Route>
 
             {/* Default Route */}
             <Route path="/" element={<Root />} />
@@ -40,6 +44,8 @@ function App() {
           className: "",
           style: {
             fontSize: "13px",
+            fontWeight: 600,
+            fontFamily: "Roboto, sans-serif",
           },
         }}
       />
@@ -58,9 +64,7 @@ const Root = () => {
     return <Navigate to="/login" />;
   }
 
-  return user.role === "admin" ? (
-    <Navigate to={"/admin/dashboard"} />
-  ) : (
-    <Navigate to={"/user/dashboard"} />
-  );
+  if (user) {
+    return <Navigate to={"/dashboard"} />;
+  }
 };
