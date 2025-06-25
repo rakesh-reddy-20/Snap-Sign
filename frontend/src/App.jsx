@@ -13,6 +13,7 @@ import UserProvider, { UserContext } from "./context/userContext";
 
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
+import Home from "./pages/User/Home";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -24,7 +25,9 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/signUp" element={<SignUp />} />
+            <Route path="/register" element={<SignUp />} />
+
+            <Route path="/admin/dashboard" element={<Home />} />
 
             {/* Default Route */}
             <Route path="/" element={<Root />} />
@@ -32,6 +35,7 @@ function App() {
         </Router>
       </div>
       <Toaster
+        position="top-right"
         toastOptions={{
           className: "",
           style: {
