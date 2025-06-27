@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
+import { UserContext } from "../../context/userContext";
+
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import {
   Card,
@@ -14,11 +19,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { updateUser } = useContext(UserContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -26,9 +34,31 @@ const Login = () => {
       return;
     }
 
-    toast.success("Login successful!");
-    console.log("Logging in with:", { email, password });
-    // Send to backend
+    try {
+      const response = await axiosInstance.post(
+        API_PATHS.AUTH.LOGIN,
+        { email, password },
+        { withCredentials: true }
+      );
+
+      const { token } = response.data;
+
+      if (token) {
+        localStorage.setItem("token", token);
+
+        // Fetch user profile and update context
+        const profileRes = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
+        updateUser({ ...profileRes.data, token });
+
+        toast.success("Login successfully!");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error.response?.data?.message || "Something went wrong. Try again."
+      );
+    }
   };
 
   return (
@@ -80,6 +110,7 @@ const Login = () => {
                 )}
               </div>
             </div>
+
             <CardFooter className="flex-col gap-2 px-0">
               <Button type="submit" className="w-full">
                 Login

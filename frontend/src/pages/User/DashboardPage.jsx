@@ -28,7 +28,7 @@ const Home = () => {
   }, [previewUrl]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
+    <div className="flex flex-col items-center justify-center bg-gray-50 px-4">
       {!previewUrl ? (
         <Card className="w-full max-w-xl p-8 shadow-lg border border-gray-200">
           <CardContent className="flex flex-col justify-center items-center gap-6 text-center">
@@ -65,10 +65,20 @@ const Home = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="w-full min-h-screen flex flex-col">
-          <div className="flex justify-between items-center p-4 bg-white border-b shadow-sm">
+        <div className="w-screen h-screen flex flex-col bg-gray-100">
+          {/* Top Bar */}
+          <div className="flex justify-between items-center px-6 py-3 bg-white border-b shadow-sm">
             <h2 className="text-lg font-semibold text-gray-700">PDF Preview</h2>
-            <div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="inline-flex items-center gap-2"
+                onClick={() => setPreviewUrl(null)}
+              >
+                Close
+              </Button>
+
               <input
                 id="file-upload"
                 type="file"
@@ -76,6 +86,7 @@ const Home = () => {
                 onChange={handleFileChange}
                 className="hidden"
               />
+
               <Button
                 asChild
                 variant="outline"
@@ -89,11 +100,14 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="flex-grow">
+          {/* PDF Preview */}
+          <div className="flex-grow overflow-hidden">
             <iframe
               src={previewUrl}
               title="PDF Preview"
-              className="w-full h-full border-none"
+              className="w-full h-full border-none rounded-md shadow-lg"
+              allowFullScreen
+              loading="lazy"
             />
           </div>
         </div>

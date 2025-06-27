@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
+import { UserContext } from "../../context/userContext";
 
 import {
   Card,
-  CardAction,
   CardHeader,
   CardTitle,
   CardDescription,
@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { updateUser } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -60,8 +61,13 @@ const Register = () => {
 
       if (token) {
         localStorage.setItem("token", token);
+
+        // Fetch user profile and update context
+        const profileRes = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
+        updateUser({ ...profileRes.data, token });
+
         toast.success("Registered successfully!");
-        navigate("/admin/dashboard");
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error(error);

@@ -1,16 +1,27 @@
+import { useContext } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "@/context/userContext";
 
-const DashboardPage = () => {
+const Navbar = () => {
+  const navigate = useNavigate();
+  const { user, loading, updateUser, clearUser } = useContext(UserContext);
+
+  const logout = () => {
+    toast.success("Logout successfully!");
+    clearUser();
+    navigate("/login");
+  };
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Navbar */}
@@ -51,7 +62,7 @@ const DashboardPage = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem className="font-semibold mb-2 ">
-                Hello Rakesh
+                Hello {user?.name || "User"}
               </DropdownMenuItem>
               <hr />
               <DropdownMenuItem className="font-semibold mt-2">
@@ -62,9 +73,7 @@ const DashboardPage = () => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-600 focus:text-red-700 font-semibold"
-                onClick={() => {
-                  console.log("Logged out");
-                }}
+                onClick={logout}
               >
                 Logout
               </DropdownMenuItem>
@@ -81,4 +90,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default Navbar;

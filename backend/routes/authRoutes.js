@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
-const protect = require("../middleware/authMiddleware");
+const isAuthorized = require("../middleware/authMiddleware");
 
 // Controllers
 const {
@@ -10,11 +10,15 @@ const {
   getMe,
   deleteProfile,
 } = require("../controllers/authController");
+const {
+  signupValidation,
+  loginValidation,
+} = require("../middleware/authValidation");
 
 // Auth Routes
-router.post("/register", wrapAsync(registerUser)); // Register User
-router.post("/login", wrapAsync(loginUser)); // Login User
-router.get("/profile", protect, wrapAsync(getMe)); // Get profile
-router.delete("/deleteProfile", protect, wrapAsync(deleteProfile));
+router.post("/register", signupValidation, wrapAsync(registerUser)); // Register User
+router.post("/login", loginValidation, wrapAsync(loginUser)); // Login User
+router.get("/profile", isAuthorized, wrapAsync(getMe)); // Get profile
+router.delete("/deleteProfile", isAuthorized, wrapAsync(deleteProfile));
 
 module.exports = router;
