@@ -3,6 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileIcon, ArrowLeftIcon } from "lucide-react";
 
+import { Viewer, Worker } from "@react-pdf-viewer/core";
+import "@react-pdf-viewer/core/lib/styles/index.css";
+
 const Home = () => {
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -100,15 +103,13 @@ const Home = () => {
             </div>
           </div>
 
-          {/* PDF Preview */}
+          {/* PDF Preview using Viewer */}
           <div className="flex-grow overflow-hidden">
-            <iframe
-              src={previewUrl}
-              title="PDF Preview"
-              className="w-full h-full border-none rounded-md shadow-lg"
-              allowFullScreen
-              loading="lazy"
-            />
+            <Worker workerUrl="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js">
+              <div className="h-full w-full">
+                <Viewer fileUrl={previewUrl} />
+              </div>
+            </Worker>
           </div>
         </div>
       )}
