@@ -1,12 +1,26 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button"; // Reuse your UI Button if available
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { useDraggable } from "@dnd-kit/core";
 
-const SignPanel = () => {
-  const [sign, setSign] = useState("");
+const SignPanel = ({
+  sign,
+  setSign,
+  onSign,
+  isSigningComplete,
+  onReset,
+  isDropped,
+}) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: "signature",
+    disabled: isSigningComplete || isDropped, // disable dragging once dropped
+  });
+
+  const style = transform
+    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
+    : undefined;
 
   return (
-    <div className="col-span-12 md:col-span-3 bg-white border border-gray-200 rounded-lg shadow p-5 h-full flex flex-col justify-between">
-      {/* Top Section */}
+    <div className="col-span-12 md:col-span-3 bg-white border rounded-lg shadow p-5 flex flex-col justify-between h-full">
       <div className="space-y-5 overflow-auto">
         <div>
           <h2 className="text-lg font-semibold text-gray-800 mb-1">
@@ -17,7 +31,6 @@ const SignPanel = () => {
           </p>
         </div>
 
-        {/* Input */}
         <div>
           <label
             htmlFor="sign"
@@ -30,37 +43,25 @@ const SignPanel = () => {
             type="text"
             value={sign}
             onChange={(e) => setSign(e.target.value)}
-            placeholder="e.g. Rakesh"
-            autoFocus
-            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none text-sm"
+            placeholder="e.g. John Doe"
+            className="w-full px-4 py-2 border rounded-md shadow-sm text-sm"
+            disabled={isSigningComplete}
           />
         </div>
 
-        {/* Preview */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Preview
           </label>
-          {/* Style 1 - Script */}
-          <div className="w-full px-4 py-3 bg-gray-100 border rounded-md text-lg text-gray-700 font-signature flex items-center justify-center min-h-[48px] text-center mb-2">
-            {sign || (
-              <span className="text-gray-400 italic">
-                Your signature will appear here
-              </span>
-            )}
-          </div>
-
-          {/* Style 2 - Serif */}
-          <div className="w-full px-4 py-3 bg-gray-100 border rounded-md text-lg text-gray-800 font-serif flex items-center justify-center min-h-[48px] text-center mb-2">
-            {sign || (
-              <span className="text-gray-400 italic">
-                Your signature will appear here
-              </span>
-            )}
-          </div>
-
-          {/* Style 3 - Bold & Uppercase */}
-          <div className="w-full px-4 py-3 bg-gray-100 border rounded-md text-lg text-gray-900 font-bold uppercase flex items-center justify-center min-h-[48px] text-center">
+          <div
+            ref={setNodeRef}
+            {...listeners}
+            {...attributes}
+            style={style}
+            className={`w-full px-4 py-3 bg-gray-100 border rounded-md text-lg text-gray-700 font-signature flex items-center justify-center min-h-[48px] text-center ${
+              isSigningComplete || isDropped ? "cursor-default" : "cursor-grab"
+            }`}
+          >
             {sign || (
               <span className="text-gray-400 italic">
                 Your signature will appear here
@@ -70,11 +71,23 @@ const SignPanel = () => {
         </div>
       </div>
 
-      {/* Bottom Button */}
-      <div className="pt-5">
-        <Button className="w-full bg-amber-400 text-white hover:bg-amber-500 transition font-semibold">
-          Sign Document
-        </Button>
+      <div className="pt-5 space-y-2">
+        {isSigningComplete ? (
+          <Button
+            className="w-full bg-green-600 text-white hover:bg-green-700 transition font-semibold"
+            onClick={onReset}
+          >
+            Sign Another Document
+          </Button>
+        ) : (
+          <Button
+            className="w-full bg-amber-500 text-white hover:bg-amber-600 transition font-semibold"
+            onClick={onSign}
+            disabled={!sign}
+          >
+            Sign Document
+          </Button>
+        )}
       </div>
     </div>
   );
