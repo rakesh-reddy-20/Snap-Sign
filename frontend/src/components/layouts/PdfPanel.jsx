@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 
@@ -7,8 +7,17 @@ const PdfPanel = ({
   droppedPosition,
   setDroppedPosition,
   isSigningComplete,
+  setPdfViewerRect,
 }) => {
   const { isOver, setNodeRef } = useDroppable({ id: "pdfPanel" });
+  const viewerRef = useRef(null);
+
+  useEffect(() => {
+    if (viewerRef.current) {
+      const rect = viewerRef.current.getBoundingClientRect();
+      setPdfViewerRect(rect);
+    }
+  }, [viewerRef, setPdfViewerRect]);
 
   const {
     attributes,
@@ -35,7 +44,10 @@ const PdfPanel = ({
   return (
     <div className="col-span-12 md:col-span-9 bg-white p-4 shadow rounded overflow-hidden h-full relative">
       <div
-        ref={setNodeRef}
+        ref={(node) => {
+          setNodeRef(node);
+          viewerRef.current = node;
+        }}
         className={`relative h-full border rounded overflow-auto ${
           isOver ? "border-blue-500 bg-blue-100" : "border-gray-400"
         }`}

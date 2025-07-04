@@ -44,12 +44,6 @@ const Navbar = () => {
               Home
             </Link>
             <Link
-              to="/about"
-              className="text-sm text-gray-700 font-medium hover:text-blue-600 transition"
-            >
-              About
-            </Link>
-            <Link
               to="/uploads"
               className="text-sm text-gray-700 font-medium hover:text-blue-600 transition"
             >
@@ -86,9 +80,6 @@ const Navbar = () => {
                   <div className="block md:hidden">
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">Home</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/about">About</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/uploads">Show my uploads</Link>

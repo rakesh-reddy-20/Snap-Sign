@@ -1,23 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { UserContext } from "@/context/userContext";
 import { Loader2 } from "lucide-react";
 
 const PrivateRoute = () => {
   const { user, loading } = useContext(UserContext);
-  const [showContent, setShowContent] = useState(false);
 
-  useEffect(() => {
-    if (!loading && user) {
-      const timer = setTimeout(() => {
-        setShowContent(true);
-      }, 1000); // 1 second delay
-
-      return () => clearTimeout(timer);
-    }
-  }, [loading, user]);
-
-  if (loading || (user && !showContent)) {
+  if (loading) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-white">
         <div className="flex items-center space-x-3">
