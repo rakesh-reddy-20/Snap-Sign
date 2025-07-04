@@ -5,7 +5,6 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-// ✅ Required to parse JSON body from frontend
 app.use(express.json());
 
 app.use(
